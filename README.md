@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/cover.png" alt="Claude Standard Dev Team" width="100%" />
+</p>
+
 # Claude Standard Dev Team
 
 > 让 Claude Code 拥有一支 13 人 AI 软件开发团队，从需求到上线全流程自动跑通。

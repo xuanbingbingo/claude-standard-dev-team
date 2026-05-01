@@ -1,0 +1,6 @@
+.DS_Store
+*.swp
+*.bak
+node_modules/
+.env
+.env.local

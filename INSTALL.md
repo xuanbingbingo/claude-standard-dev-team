@@ -23,7 +23,7 @@ cd claude-standard-dev-team
 # 2. 确保 ~/.claude/agents 目录存在
 mkdir -p ~/.claude/agents
 
-# 3. 复制 13 个 agent 到 Claude Code agent 目录
+# 3. 复制全部 agent 到 Claude Code agent 目录（12 个团队成员 + 1 个总指挥）
 cp agents/*.md ~/.claude/agents/
 
 # 4. 验证
@@ -104,9 +104,9 @@ cp agents/*.md ~/.claude/agents/
 
 ## 常见问题
 
-### Q: 我必须把 13 个全装吗？
+### Q: 我必须把全部 13 个 .md 都装吗？
 
-A: 不必。但 `orchestrator` + 规划层 2 + 实现层至少 1 个，是最小可用集合。完整 13 个能跑通完整 11 阶段。
+A: 不必。但 `orchestrator`（总指挥）+ 规划层 2 + 实现层至少 1 个，是最小可用集合。完整 13 个 .md（12 团队成员 + 1 总指挥）能跑通完整 11 阶段。
 
 ### Q: 这套 agent 会修改我的代码吗？
 

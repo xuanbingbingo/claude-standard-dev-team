@@ -4,7 +4,9 @@
 
 # Claude Standard Dev Team
 
-> 让 Claude Code 拥有一支 13 人 AI 软件开发团队，从需求到上线全流程自动跑通。
+> 让 Claude Code 拥有一支 12 人 AI 软件开发团队 + 1 位总指挥，从需求到上线全流程自动跑通。
+
+> ⚙️ **版本说明**：D1 视频录制时是 11 人版本，现仓库已迭代到 **12 人 + 1 位总指挥（orchestrator）**——这套团队仍在进化。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Compatible-blue.svg)](https://claude.com/claude-code)
@@ -13,7 +15,7 @@
 
 ## 这是什么
 
-一套面向 [Claude Code](https://claude.com/claude-code) 的 **agent 团队配置**，把"软件开发"拆成 13 个专业岗位 + 1 个总指挥，按真实研发团队的协作链路串起来：
+一套面向 [Claude Code](https://claude.com/claude-code) 的 **agent 团队配置**，把"软件开发"拆成 12 个专业岗位 + 1 位总指挥，按真实研发团队的协作链路串起来：
 
 - **不再是 1 个 AI 一锅煮**：每个 agent 只干一件事，互不交叉
 - **契约驱动**：先定 PRD/API/Schema，再让所有人照契约写
@@ -49,9 +51,11 @@
                                                   └──────────────┘
 ```
 
+**总指挥 1 + 团队成员 12 = 12 人 AI 团队（不含总指挥）**
+
 | 层级 | Agent | 职责 |
 |---|---|---|
-| **调度** | orchestrator | 不写代码，只调度其他 agent，把控 11 个阶段 |
+| **总指挥** | orchestrator | 不写代码，只调度其他 agent，把控 11 个阶段（CEO 角色，不算"团队成员"） |
 | **规划** | product-manager | 把模糊需求拆成结构化 PRD + 用户故事 + 验收标准 |
 | **规划** | software-architect | 技术选型 + 生成 API_CONTRACT / DB_SCHEMA / TECH_SPEC（最关键） |
 | **实现** | ui-designer | 视觉规范 / 设计系统 / variables.css |

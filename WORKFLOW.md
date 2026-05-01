@@ -248,7 +248,7 @@ T=13:30   orchestrator 给主对话发最终汇报
 T=13:30   主对话给用户看汇报
 ```
 
-整个过程**主对话只看到几次 orchestrator 的进度汇报**，真正干活的 13 个 agent 各自在独立 session 里跑。**主对话的 token 消耗极低**——几千 token 就跑完了一个完整项目。
+整个过程**主对话只看到几次 orchestrator 的进度汇报**，真正干活的 12 个团队成员各自在独立 session 里跑（总指挥 orchestrator 不写代码只调度）。**主对话的 token 消耗极低**——几千 token 就跑完了一个完整项目。
 
 ---
 

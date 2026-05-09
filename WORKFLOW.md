@@ -349,6 +349,16 @@ MUST FIX 必须打回，其他可上线后慢慢改。
 - CI/CD 配置（如适用）
 - **basePath 检查报告**：扫所有前端代码确认没有硬编码 `/api/...`
 
+> **延伸：从"产出 Dockerfile"到"真正上线"（可选）**
+>
+> Phase 9 跑完只是产出了**部署素材**（Dockerfile / compose）。如果你要把它真正部署到一台云服务器跑起来，仓库 `agents/` 下额外提供了基建层 3 个 agent：
+>
+> 1. `infra-bootstrap-agent` — 服务器一次性初始化（gateway-net / nginx-gateway / infra-mysql）
+> 2. `app-deploy-agent` — 按仓库根目录的 `deploy.yaml` 把应用部署上去
+> 3. `deploy-yaml-schema` — `deploy.yaml` 字段契约
+>
+> 这 3 个 agent 不在 11 Phase 主链路里，由你**手动触发**。详见 README "进阶：完整部署链路"小节。基建层带作者私有约定，按需启用。
+
 ### Phase 10 - 最终验收（reality-checker）
 
 reality-checker 是个**疑心病**——默认判决是"NEEDS WORK"。它会：

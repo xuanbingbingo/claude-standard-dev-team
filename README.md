@@ -98,6 +98,29 @@ Phase 11  → technical-writer     → README + API_DOC
 
 ---
 
+## 进阶：完整部署链路（可选）
+
+12 个核心 agent 跑完 Phase 11 你已经拿到**完整可上线的代码库**——但"如何把它真正部署到一台云服务器"还差最后一步。
+
+仓库 `agents/` 下额外提供了 3 个**基建层 agent**，让你一键打通"从代码到上线"：
+
+| Agent | 职责 |
+|---|---|
+| `infra-bootstrap-agent` | 服务器一次性初始化：Docker 网络 + 中央 Nginx 网关 + 共享 MySQL |
+| `app-deploy-agent` | 按 `deploy.yaml` 把任意应用部署到已初始化的服务器 |
+| `deploy-yaml-schema` | `deploy.yaml` 字段契约（schema 文档，不是 agent） |
+
+**典型用法**（一台服务器跑多个应用，路径前缀路由）：
+
+```
+新服务器 → infra-bootstrap-agent（一次）
+新应用   → 仓库根目录写 deploy.yaml → app-deploy-agent
+```
+
+⚠️ **注意**：基建层带有作者私有的部署约定（共享网关 / 共享 MySQL / `/opt/apps/{app}` 目录布局），适合**一人公司 / 独立开发者**多应用复用一台服务器的场景。如果你有不同的部署偏好（K8s / 多服务器 / 云原生托管），跳过基建层、保留 12 个核心 agent 即可。
+
+---
+
 ## 5 分钟上手
 
 ### 1. 装入 Claude Code
@@ -153,7 +176,7 @@ orchestrator 会自动接管：扫描需求 → 调 product-manager 写 PRD → 
 
 | 维度 | 裸 Claude Code | 标准团队 |
 |---|---|---|
-| 角色边界 | 1 个 AI 全干 | 13 个 agent 各司其职 |
+| 角色边界 | 1 个 AI 全干 | 12 个 agent 各司其职 |
 | 契约约束 | 无（边写边改） | 必须先定 PRD/API/Schema |
 | QA 验证 | 写完了说"应该 OK"| 任务级 QA Agent 独立验证 |
 | 打回机制 | 没有 | 4 类规则 + 重试上限 |

@@ -6,7 +6,7 @@
 
 > 让 Claude Code 拥有一支 12 人 AI 软件开发团队 + 1 位总指挥，从需求到上线全流程自动跑通。
 
-> ⚙️ **版本说明**：D1 视频录制时是 11 人版本，现仓库已迭代到 **12 人 + 1 位总指挥（orchestrator）**——这套团队仍在进化。
+> ⚙️ **版本演进**：D1 视频录制时是 11 人版本 → 仓库主叙事迭代到 **12 人 + 1 总指挥**（当前默认）→ 进阶用户可启用基建层 3 个 agent 升级到 **16 人**完整部署闭环（见下方[进阶：完整部署链路](#进阶完整部署链路可选)）。这套团队仍在进化。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Compatible-blue.svg)](https://claude.com/claude-code)

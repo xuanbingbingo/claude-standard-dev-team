@@ -412,6 +412,41 @@ FOR 每个 project-tasks/frontend-tasklist.md 中的 [ ] 任务：
 
 ---
 
+## ► Phase 9.5：端到端真测硬关卡（orchestrator 主会话亲自执行，不下放）
+
+> ⚠️ **5-11 refeng 上线事故复盘加的硬关卡**：4 个连环运行时 bug 全在 Phase 5-8 各自 tsc 通过、curl 通过、subagent 截图通过的情况下漏到生产，根因是没人在浏览器里真跑一遍。
+
+### 执行主体
+**orchestrator 主会话亲自执行**，禁止派 subagent（subagent 看不到 Playwright MCP 工具）。
+
+### 工具
+Playwright MCP（`mcp__plugin_everything-claude-code_playwright__*`）。如不可用 → 至少用 curl 完整模拟 PRD 关键用户流（带 cookie / CSRF / Origin 头）。
+
+### 执行清单（按 PRD 关键用户流逐条跑）
+1. 用 `browser_navigate` 打开线上/dev URL → 截图首屏
+2. 走完登录流程（含错误密码、正确密码、首次改密、记住我）→ 各截图 + 看 console
+3. 走完核心业务页面（如工作台首屏渲染 + 应用人设 + 排序结果 + 详情展开）→ 看 console
+4. 走完后台 CRUD（如 admin 列表 / 新建 / 删除 / 重置密码）→ 看 console
+5. 走完导出 / 筛选 / 移动端响应式断点 → 看 console
+
+### 硬规则（任一触发 → 阻塞 Phase 10）
+- **浏览器 Console 任何 `Uncaught TypeError` / `Uncaught ReferenceError` / `Failed to load` / `4xx/5xx fetch`** → 阻塞，自己 grep 定位修复或派打回
+- **多张截图字节数完全一致** → 大概率全是同一张白屏，禁止判通过；必须深挖 console 真实原因
+- **任何接口 422 / 500 / 401（不该 401 的页面）** → 阻塞
+- **后端响应字段 vs 前端读字段不对齐**（grep `data.xxx` vs `API_CONTRACT.md` 字段名）→ 阻塞
+- **看到"X 条"是 0 但应该有数据** → 阻塞
+
+### 兜底（Playwright MCP 不可用时）
+用 curl 模拟 PRD 关键用户流 → 用 `python3 -c "import json,sys; d=json.load(sys.stdin); ..."` 对响应字段做类型抽样 → 对照 `API_CONTRACT.md` 列字段名 / 类型 / 必选；任何不对齐 → 阻塞。
+
+### 产出
+`docs/PHASE_9_5_E2E_LOG.md`：含每个用户流的截图路径 + console errors（应为空）+ 字段对齐对照表。
+
+### 不许跳过
+即使 Phase 5-8 全绿、Phase 9 部署一气呵成，**Phase 9.5 不过 → Phase 10 拒绝启动**。
+
+---
+
 ## ► Phase 10：最终验收
 
 **调用 `reality-checker`**

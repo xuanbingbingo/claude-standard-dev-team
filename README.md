@@ -57,13 +57,13 @@
 |---|---|---|
 | **总指挥** | orchestrator | 不写代码，只调度其他 agent，把控 11 个阶段（CEO 角色，不算"团队成员"） |
 | **规划** | product-manager | 把模糊需求拆成结构化 PRD + 用户故事 + 验收标准 |
-| **规划** | software-architect | 技术选型 + 生成 API_CONTRACT / DB_SCHEMA / TECH_SPEC（最关键） |
+| **规划** | software-architect | 技术选型 + 生成 API_CONTRACT / DB_SCHEMA / TECH_SPEC（最关键）；**契约变更必同步扫前端 types.ts** |
 | **实现** | ui-designer | 视觉规范 / 设计系统 / variables.css |
 | **实现** | database-optimizer | 数据库迁移文件 + Model 层 + 索引设计 |
 | **实现** | backend-architect | 严格按 API 契约实现接口 |
 | **实现** | frontend-developer | 前端实现，禁止硬编码 API 路径 |
 | **实现** | devops-automator | Dockerfile / docker-compose / CI/CD / 部署路径前缀检查 |
-| **质量** | testing-evidence-collector | 任务级 QA，独立验证每个接口字段路径 |
+| **质量** | testing-evidence-collector | 任务级 QA，多模态证据取证（命令行 / JSON / 日志 / diff / typecheck / 单元测试），**0 浏览器自动化依赖** |
 | **质量** | security-engineer | 威胁建模 + 漏洞扫描 + OWASP 检查 |
 | **质量** | code-reviewer | 正确性 / 可维护性 / 性能复审 |
 | **质量** | reality-checker | 最终验收官，默认"需要返工"，要压倒性证据才放行上线 |
@@ -169,6 +169,8 @@ orchestrator 会自动接管：扫描需求 → 调 product-manager 写 PRD → 
 | **职责单一** | 每个 agent 只干一类事 |
 | **质量 > 速度** | 宁可串行也不并行（前后端不能同时改代码） |
 | **零容忍硬编码** | API 路径硬编码必须打回（来自部署翻车的真实教训） |
+| **契约变更扫前端** | 架构师改 API_CONTRACT 后必须同步扫一遍前端 `types.ts`，防"后端改完前端不知道"翻车 |
+| **0 插件依赖** | QA agent 不依赖 Playwright / Puppeteer / MCP 插件，所有证据用 bash / curl / jq / diff / typecheck / npm test 取得 |
 
 ---
 

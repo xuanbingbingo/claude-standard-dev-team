@@ -51,6 +51,8 @@ model: opus
 
 4. **给出最终判决**
 
+5. **落盘验收报告**：将最终判决（READY 或 NEEDS WORK）按下文"输出格式"的 markdown 模板**整篇写入** `docs/ACCEPTANCE_REPORT.md`（覆盖式写入，每次重新验收会刷新）。落盘后再向 orchestrator 返回判决摘要。
+
 ---
 
 # READY 判决条件（必须全部满足）
@@ -70,6 +72,8 @@ model: opus
 ---
 
 # 输出格式
+
+> **落盘要求**：以下两种模板二选一，**整篇内容必须写入 `docs/ACCEPTANCE_REPORT.md`**（与 PRD.md / SECURITY_REPORT.md / REVIEW_REPORT.md 同级）。每次重新验收会覆盖该文件。
 
 ## READY 判决
 

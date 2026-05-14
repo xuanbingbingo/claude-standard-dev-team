@@ -139,8 +139,10 @@ docs/
   DESIGN_SYSTEM.md     ← UI 设计规范，frontend-developer 必须遵守
   DYNAMIC_CONTENT_MAP.md
   BACKEND_STATUS.md
-  SECURITY_REPORT.md
-  REVIEW_REPORT.md
+  SECURITY_REPORT.md       ← Phase 7 安全审查报告
+  REVIEW_REPORT.md         ← Phase 8 代码评审报告
+  QA_REPORT.md             ← Phase 5/6 任务级 Dev-QA Loop 累计记录
+  ACCEPTANCE_REPORT.md     ← Phase 10 最终验收报告
 project-tasks/
   backend-tasklist.md
   frontend-tasklist.md
@@ -308,7 +310,9 @@ FOR 每个 project-tasks/backend-tasklist.md 中的 [ ] 任务：
       - 路径是否与契约一致
       - 返回字段名是否与契约一致
       - 错误处理是否覆盖契约中定义的状态码
-    产出：PASS 或 FAIL + 具体原因
+    产出：
+      - PASS 或 FAIL + 具体原因（返回 orchestrator）
+      - **追加写入 docs/QA_REPORT.md**（与 PRD/SECURITY/REVIEW 同级，累计记录所有任务级 QA 结果）
 
   STEP 3 - 决策：
     PASS → 将任务标记为 [x]，进入下一任务
@@ -349,7 +353,9 @@ FOR 每个 project-tasks/frontend-tasklist.md 中的 [ ] 任务：
       - API 调用字段名是否与契约一致
       - 表单提交和响应处理是否正确
       - 颜色/字体/间距是否使用了 CSS 变量（不得出现硬编码数值）
-    产出：PASS 或 FAIL + 截图证据
+    产出：
+      - PASS 或 FAIL + 截图证据（返回 orchestrator）
+      - **追加写入 docs/QA_REPORT.md**（与 PRD/SECURITY/REVIEW 同级，累计记录所有任务级 QA 结果）
 
   STEP 3 - 决策（同后端 Loop 规则）
 ```
@@ -422,6 +428,7 @@ FOR 每个 project-tasks/frontend-tasklist.md 中的 [ ] 任务：
   - 读取 project-tasks/ 所有任务清单（验证全部 [x]）
   - 读取 docs/SECURITY_REPORT.md
   - 读取 docs/REVIEW_REPORT.md
+  - 读取 docs/QA_REPORT.md（累计 QA 记录）
   - 运行完整用户旅程测试（截图证据）
 
 判决规则：
@@ -432,7 +439,13 @@ FOR 每个 project-tasks/frontend-tasklist.md 中的 [ ] 任务：
       ✅ 用户核心流程截图可见且正常
       ✅ API_CONTRACT 中所有接口均有测试通过记录
 
-完成标志：reality-checker 输出 READY
+产出：
+  - 判决摘要（返回 orchestrator）
+  - **写入 docs/ACCEPTANCE_REPORT.md**（与 PRD/SECURITY/REVIEW/QA 同级，覆盖式，每次验收刷新）
+
+完成标志：
+  - reality-checker 输出 READY
+  - docs/ACCEPTANCE_REPORT.md 存在且判决为 READY
 ```
 
 ---

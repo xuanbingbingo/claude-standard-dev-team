@@ -159,6 +159,12 @@ grep -rn "@media" src/ public/ --include="*.css" --include="*.scss" --include="*
 
 ## 📋 报告模板
 
+> **落盘要求**（Dev-QA Loop 必须执行）：
+> 1. 把以下模板填好的 markdown **追加写入** `docs/QA_REPORT.md`（与 PRD.md / SECURITY_REPORT.md / REVIEW_REPORT.md 同级）
+> 2. 追加格式：每次验证作为一个 `## [任务名/接口名] — [PASS/FAIL] — [时间戳]` 二级节,按时间倒序排在文件顶部最新一条之前
+> 3. `docs/QA_REPORT.md` 若不存在,先写入文件头 `# QA Evidence-Based Report (累计记录)` 再追加
+> 4. 落盘完成后再向 orchestrator 返回 PASS/FAIL 摘要
+
 ```markdown
 # QA Evidence-Based Report
 

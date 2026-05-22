@@ -20,17 +20,25 @@
 git clone https://github.com/xuanbingbingo/claude-standard-dev-team.git
 cd claude-standard-dev-team
 
-# 2. 确保 ~/.claude/agents 目录存在
+# 2. 确保目标目录存在
 mkdir -p ~/.claude/agents
+mkdir -p ~/.claude/skills/standard-team
 
-# 3. 复制全部 agent 到 Claude Code agent 目录（12 个团队成员 + 1 个总指挥）
+# 3. 复制 12 个团队成员 agent（+ orchestrator.md 退役兼容入口）
 cp agents/*.md ~/.claude/agents/
 
-# 4. 验证
-ls ~/.claude/agents/ | grep -E "orchestrator|product-manager|software-architect"
+# 4. 复制总指挥剧本 skill（核心入口，2026-05-22 起替代 orchestrator agent）
+cp skills/standard-team/SKILL.md ~/.claude/skills/standard-team/
+
+# 5. 验证
+ls ~/.claude/agents/ | grep -E "product-manager|software-architect|backend-architect"
+ls ~/.claude/skills/standard-team/SKILL.md
 ```
 
-看到 3 个文件名就装成功了。
+看到 3 个 agent 文件名 + 1 个 SKILL.md 就装成功了。
+
+> ⚠️ **必须装 skill**：总指挥从 2026-05-22 起改为 skill 形式（详见 [WORKFLOW.md](WORKFLOW.md) 顶部说明）。
+> 只装 agents/ 不装 skills/ 会导致主对话无法识别"用标准团队开发"关键词。
 
 ### 方式二：只装部分 agent
 
@@ -55,24 +63,29 @@ cp agents/software-architect.md ~/.claude/agents/
 
 如果看到主对话回复类似下面的内容，就装成功了：
 
-> 收到。我现在派 orchestrator 接管这个项目，会按 11 阶段流程跑：先让 product-manager 写 PRD，等你确认范围后再进入 API 契约设计...
+> 收到。我已 load standard-team skill，按 11 阶段剧本接管这个项目：先调 product-manager 写 PRD，等你确认范围后再进入 API 契约设计...
 
-如果没有任何反应，或者主对话直接开始写代码（没调 orchestrator），检查：
+如果没有任何反应，或者主对话直接开始写代码（没 load skill），检查：
 
-1. 文件确实在 `~/.claude/agents/` 下（不是 `~/Claude/agents/` 或别的地方）
-2. 文件后缀是 `.md`，不是 `.md.txt`
-3. 重启 Claude Code 让它重新加载 agent 列表
+1. skill 文件确实在 `~/.claude/skills/standard-team/SKILL.md`
+2. 12 个成员 agent 在 `~/.claude/agents/` 下（不是 `~/Claude/agents/` 或别的地方）
+3. 文件后缀是 `.md`，不是 `.md.txt`
+4. 重启 Claude Code 让它重新加载 skill / agent 列表
 
 ---
 
 ## 卸载
 
 ```bash
+# 删 agent
 cd ~/.claude/agents/
 rm orchestrator.md product-manager.md software-architect.md ui-designer.md \
    database-optimizer.md backend-architect.md frontend-developer.md \
    devops-automator.md testing-evidence-collector.md security-engineer.md \
    code-reviewer.md reality-checker.md technical-writer.md
+
+# 删 skill
+rm -rf ~/.claude/skills/standard-team
 ```
 
 ---
@@ -98,15 +111,20 @@ cp ~/.claude/agents/*.md ~/.claude/agents/_backup_$(date +%Y%m%d)/
 cd /your/clone/path/claude-standard-dev-team
 git pull
 cp agents/*.md ~/.claude/agents/
+cp skills/standard-team/SKILL.md ~/.claude/skills/standard-team/
 ```
 
 ---
 
 ## 常见问题
 
-### Q: 我必须把全部 13 个 .md 都装吗？
+### Q: 我必须把全部文件都装吗？
 
-A: 不必。但 `orchestrator`（总指挥）+ 规划层 2 + 实现层至少 1 个，是最小可用集合。完整 13 个 .md（12 团队成员 + 1 总指挥）能跑通完整 11 阶段。
+A: 最小可用集合 = `standard-team` skill + 规划层 2 个 agent（product-manager, software-architect）+ 实现层至少 1 个。
+完整配置 = 1 个 skill（总指挥剧本）+ 13 个 agent（12 团队成员 + 1 个 orchestrator 退役兼容入口）能跑通完整 11 阶段。
+
+> orchestrator.md 现在只是兼容入口（避免老用户调用 `Task(subagent_type=orchestrator)` 时报错）。
+> 真正的总指挥角色由 `standard-team` skill 承担。
 
 ### Q: 这套 agent 会修改我的代码吗？
 

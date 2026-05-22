@@ -4,6 +4,30 @@
 
 ---
 
+## 重要架构变更（2026-05-22）
+
+**总指挥从 agent 转为 skill**。原因：
+
+- 2026-05-08 沙箱实测证实，Claude Code 平台规则——**subagent 不能 spawn 其他 subagent**
+- orchestrator 若作为 subagent 启动，Task 工具会被运行时强制剥离，调不动 12 成员
+- 真正的调度者一直是**主会话**（照 orchestrator.md 当 SOP 剧本走）
+
+现在把这个事实显式化：
+- 总指挥剧本搬到 `skills/standard-team/SKILL.md`
+- 主会话识别"用标准团队开发"等关键词后 load skill
+- 由主会话**直接**用 Task 工具派遣 12 个成员 agent（下方流程图里所有 `Task → xxx` 都是主会话发起的）
+
+`agents/orchestrator.md` 保留为兼容入口（30 行退役说明），不再承担调度职责。
+
+### 阅读约定
+
+为了让流程图和示例保持可读性，下方内容仍保留 `orchestrator` 字样。请将它理解为：
+> **"主会话 load standard-team skill 后，照 11 Phase 剧本执行"** 的简称。
+
+所有 `orchestrator → Task → xxx-agent` 实际等价于"主会话发起 Task 派遣 xxx-agent"。
+
+---
+
 ## 一、Phase 调度全图
 
 ```

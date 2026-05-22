@@ -6,7 +6,7 @@
 
 > 让 Claude Code 拥有一支 12 人 AI 软件开发团队 + 1 位总指挥，从需求到上线全流程自动跑通。
 
-> ⚙️ **版本演进**：D1 视频录制时是 11 人版本 → 仓库主叙事迭代到 **12 人 + 1 总指挥**（当前默认）→ 进阶用户可启用基建层 3 个 agent 升级到 **16 人**完整部署闭环（见下方[进阶：完整部署链路](#进阶完整部署链路可选)）。这套团队仍在进化。
+> ⚙️ **版本演进**：D1 视频录制时是 11 人版本 → 迭代到 **12 人 + 1 总指挥** → **2026-05-22 起总指挥从 agent 转为 skill（standard-team）**，由主会话直接调度 12 个成员 agent（实测验证 subagent 不能嵌套 spawn 其他 subagent）→ 进阶用户可启用基建层 3 个 agent 升级到 **完整部署闭环**（见下方[进阶：完整部署链路](#进阶完整部署链路可选)）。这套团队仍在进化。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Compatible-blue.svg)](https://claude.com/claude-code)
@@ -15,7 +15,7 @@
 
 ## 这是什么
 
-一套面向 [Claude Code](https://claude.com/claude-code) 的 **agent 团队配置**，把"软件开发"拆成 12 个专业岗位 + 1 位总指挥，按真实研发团队的协作链路串起来：
+一套面向 [Claude Code](https://claude.com/claude-code) 的 **agent 团队配置**，把"软件开发"拆成 12 个专业岗位 + 1 个总指挥剧本（skill 形式，主会话直接调度），按真实研发团队的协作链路串起来：
 
 - **不再是 1 个 AI 一锅煮**：每个 agent 只干一件事，互不交叉
 - **契约驱动**：先定 PRD/API/Schema，再让所有人照契约写
@@ -29,33 +29,38 @@
 ## 团队架构
 
 ```
-                    ┌─────────────────────────┐
-                    │     orchestrator        │
-                    │   总指挥，不写代码        │
-                    └────────────┬────────────┘
-                                 │
-        ┌────────────────────────┼────────────────────────┐
-        │                        │                        │
-┌───────▼─────┐         ┌────────▼────────┐      ┌────────▼─────┐
-│  规划层 2   │         │   实现层 5      │      │  质量层 4     │
-├──────────── │         ├─────────────────│      ├──────────────│
-│ pm          │         │ db-optimizer    │      │ ev-collector │
-│ sw-architect│         │ backend-arch    │      │ sec-engineer │
-│             │         │ ui-designer     │      │ code-reviewer│
-│             │         │ frontend-dev    │      │ reality-chk  │
-│             │         │ devops-automator│      └──────────────┘
-└─────────────┘         └─────────────────┘
-                                                  ┌──────────────┐
-                                                  │  文档层 1    │
-                                                  │ tech-writer  │
-                                                  └──────────────┘
+                ┌─────────────────────────────┐
+                │  standard-team (skill)      │
+                │  总指挥剧本，主会话执行       │
+                │  通过 Task 直接派遣下面 12 个 │
+                └────────────┬────────────────┘
+                             │
+        ┌────────────────────┼────────────────────┐
+        │                    │                    │
+┌───────▼─────┐     ┌────────▼────────┐  ┌────────▼─────┐
+│  规划层 2   │     │   实现层 5      │  │  质量层 4     │
+├──────────── │     ├─────────────────│  ├──────────────│
+│ pm          │     │ db-optimizer    │  │ ev-collector │
+│ sw-architect│     │ backend-arch    │  │ sec-engineer │
+│             │     │ ui-designer     │  │ code-reviewer│
+│             │     │ frontend-dev    │  │ reality-chk  │
+│             │     │ devops-automator│  └──────────────┘
+└─────────────┘     └─────────────────┘
+                                          ┌──────────────┐
+                                          │  文档层 1    │
+                                          │ tech-writer  │
+                                          └──────────────┘
 ```
 
-**总指挥 1 + 团队成员 12 = 12 人 AI 团队（不含总指挥）**
+**总指挥剧本（skill）+ 团队成员 12 = 12 人 AI 团队 + 1 个 skill 形式的剧本**
 
-| 层级 | Agent | 职责 |
+> 💡 **为什么总指挥是 skill 不是 agent**：Claude Code 平台限制——subagent 不能 spawn 其他 subagent。
+> 实测发现 orchestrator 若作为 subagent 启动，Task 工具会被运行时强制剥离，调不动 12 成员。
+> 所以"总指挥"必须由主会话亲自担任，剧本以 skill 形式装载，由主会话 load 后直接派遣。
+
+| 层级 | 标识 | 职责 |
 |---|---|---|
-| **总指挥** | orchestrator | 不写代码，只调度其他 agent，把控 11 个阶段（CEO 角色，不算"团队成员"） |
+| **总指挥** | standard-team (skill) | 不写代码，主会话 load 后照剧本调度 12 个 agent，把控 11 个阶段（CEO 角色，不算"团队成员"） |
 | **规划** | product-manager | 把模糊需求拆成结构化 PRD + 用户故事 + 验收标准 |
 | **规划** | software-architect | 技术选型 + 生成 API_CONTRACT / DB_SCHEMA / TECH_SPEC（最关键）；**契约变更必同步扫前端 types.ts** |
 | **实现** | ui-designer | 视觉规范 / 设计系统 / variables.css |
@@ -127,16 +132,24 @@ Phase 11  → technical-writer     → README + API_DOC
 
 ```bash
 git clone https://github.com/xuanbingbingo/claude-standard-dev-team.git
-cp claude-standard-dev-team/agents/*.md ~/.claude/agents/
+cd claude-standard-dev-team
+
+# 1) 装 12 个团队成员 agent
+mkdir -p ~/.claude/agents
+cp agents/*.md ~/.claude/agents/
+
+# 2) 装总指挥剧本（skill）
+mkdir -p ~/.claude/skills/standard-team
+cp skills/standard-team/SKILL.md ~/.claude/skills/standard-team/
 ```
 
 ### 2. 在 Claude Code 里说一句话启动
 
 ```
-使用标准团队帮我开发一个 todo app
+用标准团队帮我开发一个 todo app
 ```
 
-orchestrator 会自动接管：扫描需求 → 调 product-manager 写 PRD → 给你看 PRD 让你确认 → 调 software-architect 写 API 契约 → ... → 一路跑到 Phase 11 出文档。
+主会话识别关键词后会 load **standard-team skill**，按 11 Phase 剧本自动接管：扫描需求 → 调 product-manager 写 PRD → 给你看 PRD 让你确认 → 调 software-architect 写 API 契约 → ... → 一路跑到 Phase 11 出文档。
 
 详细安装/卸载/排错见 [INSTALL.md](INSTALL.md)。
 

@@ -478,7 +478,81 @@ FOR 每个 project-tasks/frontend-tasklist.md 中的 [ ] 任务：
 
 ---
 
+# Subagent 中断与续传机制
+
+## 背景
+
+Subagent 执行长任务时可能撞到平台错误（502 upstream unreachable、context length exceeded、max turns 等），导致 agent 状态丢失并返回 error。但 agent 在死之前通过 Write/Edit 落盘的文件**仍保留在磁盘上**——Write 是原子的，文件要么完整要么不存在。
+
+默认情况下，重新派遣同一类 subagent 不会"知道"这些残留文件，会按 prompt 从零开始，可能覆盖之前的工作。本机制要求主会话在派遣长任务前明示 deliverables，遇到中断时先做差异比对再续传。
+
+## 触发条件
+
+Subagent 返回的不是"任务完成"，而是以下任一：
+- 平台错误：`API Error: 502`、`upstream unreachable`、`network` 等
+- 资源耗尽：`context length exceeded`、`max turns exceeded`、`prompt is too long`
+- Agent 中途汇报："我需要确认"、"遇到 X 问题请指示"
+
+⚠️ 这与下方"打回重试总规则"区分——后者处理"agent 完成但 QA FAIL"，本机制处理"agent 根本没完成"。
+
+## 派遣长任务前的标准动作（事前）
+
+派 Phase 4 / 5 / 6 / 7 / 10 这种长任务 agent 时，prompt 必须包含一段 **deliverables 清单**：
+
+```
+预期产出文件（如已部分存在，是上次中断遗留，请勿覆盖；只补齐缺失项）：
+  - backend/src/app.js
+  - backend/src/routes/auth.js
+  - backend/src/controllers/auth.js
+  - ...
+```
+
+这份清单主会话自己也要记下来（写进 task 描述或临时变量），中断时要用。
+
+## Subagent 报错后的处理（事中）
+
+按以下顺序，**不要跳步**：
+
+1. **不要立即重派**
+2. **`ls` 一遍 deliverables 清单中每个路径**，分类：
+   - ✅ 已存在 = 上次中断前完成
+   - ❌ 不存在 = 缺失
+3. **抽查 1–2 个关键已存在文件**（如入口、controller），Read 看一眼确认不是空文件或半截内容。Write 工具是原子的，正常情况文件都是完整的；但若 agent 死在 Edit 工具中间，被 Edit 的文件可能不完整，要警惕。
+4. **派一个同类型新 agent**，prompt 必须包含续传说明：
+   ```
+   ⚠️ 这是续传任务
+   上次同任务执行时在第 N 个工具调用后中断（原因：{原始 error}）。
+   以下文件已写完并经过验证，请勿重写、勿修改、勿删除：
+     - {file1}
+     - {file2}
+     - ...
+   只需完成以下缺失项：
+     - {missing1}
+     - {missing2}
+   实施前可 Read 上面已存在文件了解上下文，但绝对不要 Write/Edit 它们。
+   完成后简短汇报本次新写入的文件列表。
+   ```
+
+## 续传次数上限
+
+| 中断类型 | 最大续传次数 | 超限处理 |
+|---------|------------|---------|
+| 平台错误（502 / network） | 2 次 | 暂停 → 向用户报告 |
+| Context/turns 耗尽 | 1 次续传，第 2 次必须降级（拆任务或换 sonnet/haiku） | 暂停 |
+| Agent 主动中途汇报 | 不走续传，按下方"打回重试"规则改 prompt 后重派 | — |
+
+## 反模式
+
+- ❌ Agent 报错后立即原样重派 → agent 不知道有残留文件，可能覆盖
+- ❌ `rm -rf` 残留目录从零开始 → 浪费已完成的工作
+- ❌ Prompt 里只写"继续上次任务" → agent 没有上下文，仍是从零
+
+---
+
 # 打回重试总规则
+
+> 本表处理 **agent 完成了但产出有问题**（QA FAIL、安全问题、review 不过等）。
+> 若 agent 因平台错误 / 上游不可达 / 资源耗尽**根本没完成**，先走上方 §Subagent 中断与续传机制，不要走本表。
 
 | 触发条件 | 打回目标 | 最大重试 |
 |---------|---------|---------|

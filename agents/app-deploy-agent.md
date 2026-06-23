@@ -252,12 +252,12 @@ ports:
 # ✗ 不挂载 volume，容器删除后数据永久丢失
 services:
   mysql:
-    image: mysql:8
+    image: mysql:8.0
 
 # ✓ 必须挂载具名 volume
 services:
   mysql:
-    image: mysql:8
+    image: mysql:8.0
     volumes:
       - {APP_NAME}_mysql_data:/var/lib/mysql
 

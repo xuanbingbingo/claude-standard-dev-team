@@ -190,7 +190,7 @@ max_heap_table_size     = 16M
 version: '3.8'
 services:
   infra-mysql:
-    image: mysql:8
+    image: mysql:8.0
     container_name: infra-mysql
     restart: unless-stopped
     env_file: .env

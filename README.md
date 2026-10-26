@@ -6,7 +6,7 @@
 
 > 让 Claude Code 拥有一支 12 人 AI 软件开发团队 + 1 位总指挥，从需求到上线全流程自动跑通。
 
-> ⚙️ **版本演进**：D1 视频录制时是 11 人版本 → 迭代到 **12 人 + 1 总指挥** → **2026-05-22 起总指挥从 agent 转为 skill（standard-team）**，由主会话直接调度 12 个成员 agent（实测验证 subagent 不能嵌套 spawn 其他 subagent）→ 进阶用户可启用基建层 3 个 agent 升级到 **完整部署闭环**（见下方[进阶：完整部署链路](#进阶完整部署链路可选)）。这套团队仍在进化。
+> ⚙️ **版本演进**：D1 视频录制时是 11 人版本 → 迭代到 **12 人 + 1 总指挥** → **2026-05-22 起总指挥从 agent 转为 skill（standard-team）**，由主会话直接调度 12 个成员 agent（当时实测 subagent 不能嵌套 spawn 其他 subagent；Claude Code v2.1.172 起已支持嵌套，是否改回 agent / 改用 Agent Teams 正在实测评估，见 [#2](https://github.com/xuanbingbingo/claude-standard-dev-team/issues/2)）→ 进阶用户可启用基建层 3 个 agent 升级到 **完整部署闭环**（见下方[进阶：完整部署链路](#进阶完整部署链路可选)）。这套团队仍在进化。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Compatible-blue.svg)](https://claude.com/claude-code)

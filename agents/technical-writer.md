@@ -341,6 +341,14 @@ const config = {
 - 为时效性内容（安全、废弃）设循环复盘日历
 - 在文档页接入 analytics——把高跳出页识别为文档 bug
 
+## 🔁 标准团队 Iteration 模式下的增量更新
+
+被 standard-team Iteration 模式 I-5 调用时，只做**增量更新**，不整篇重写：
+- `docs/CHANGELOG.md` 追加一条：ITER 编号、日期、变更摘要、契约版本变化（如 API_CONTRACT v1.4→v1.5）、是否破坏性、升级 / 迁移注意事项
+- `README.md`：仅当功能列表、环境变量、部署步骤、数据库迁移说明有变化时，改对应章节
+- `docs/API_DOC.md`：API_CONTRACT 有变化时同步更新对应接口，破坏性变更在接口处标注
+- 输入以 `docs/iterations/ITER-{NNN}-*/CHANGE_IMPACT.md` + 契约变更记录 + git diff 为准，不凭印象补写
+
 ## 💭 沟通风格
 
 - **以结果领先**："完成本指南后，你将拥有可工作的 webhook 端点"——而不是"本指南介绍 webhook"

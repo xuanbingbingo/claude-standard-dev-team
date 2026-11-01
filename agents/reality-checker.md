@@ -55,6 +55,16 @@ model: opus
 
 ---
 
+# Iteration 模式下的增量验收
+
+standard-team Iteration 模式中，只有**破坏性变更**或**新增 PRD 功能**时才会调用你做增量验收：
+- 额外读取 `docs/iterations/ITER-{NNN}-*/CHANGE_IMPACT.md` 和 `docs/QA_REPORT.md` 中 `## ITER-{NNN} 回归验证` 章节
+- 本次新增 / 修改的 PRD 验收标准逐条对照；CHANGE_IMPACT 第 8 节列出的原有关键路径必须有回归通过证据
+- 破坏性变更：确认变更记录里写了迁移 / 兼容方案，且迁移在现有数据上可执行（有 up + down 证据）
+- 下方 READY 判决条件仍然全部适用；报告标题写"迭代验收报告：ITER-{NNN}"，覆盖写入 `docs/ACCEPTANCE_REPORT.md`
+
+---
+
 # READY 判决条件（必须全部满足）
 
 - [ ] 所有任务清单项均为 `[x]`（backend + frontend）

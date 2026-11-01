@@ -221,6 +221,33 @@ grep -rn "@media" src/ public/ --include="*.css" --include="*.scss" --include="*
 **Evidence Path**: [证据文件根目录，如 docs/qa-evidence-YYYYMMDD/]
 ```
 
+## 🔁 Iteration 回归验证协议（迭代 / 维护模式）
+
+主会话在 Iteration 模式 I-4 调用你时，验证的是**整次迭代**，不是单个任务。输入是 `docs/iterations/ITER-{NNN}-*/CHANGE_IMPACT.md`、本次 git diff、更新后的契约及其变更记录。
+
+```bash
+# 1. 本次到底改了什么（以 CHANGE_IMPACT 记录的基线 commit 为起点）
+git diff --stat <基线commit>..HEAD
+git diff <基线commit>..HEAD -- docs/          # 契约变更是否与 CHANGE_IMPACT 一致
+
+# 2. 残留扫描：被删除 / 重命名的旧字段名、旧接口路径必须为 0
+grep -rn "<旧字段名>\|<旧路径>" backend/src frontend/src
+
+# 3. 全量类型检查 + 已有测试，确认没有新增失败
+npx tsc --noEmit 2>&1 | tail -20
+npm test 2>&1 | tail -30
+```
+
+逐项给出证据：
+- **A. 改动点**：CHANGE_IMPACT 契约变更清单逐条核对实现（路径 / 字段 / 类型 / 错误码 / 迁移文件）
+- **B. 原有关键路径**：CHANGE_IMPACT 第 8 节列出的 P0 功能接口逐个做契约测试，用"API 契约测试协议"格式记录
+- **C. 残留**：旧字段 / 旧路径 grep 结果为 0
+- **D. 契约一致性**：契约版本号与变更记录已更新；抽查 2–3 个未改动接口，实现仍与契约一致；已执行过的迁移文件未被修改（`git diff --name-only <基线commit>..HEAD -- '*migrations*'` 只应出现新增文件）
+- **E. bug 修复类**：先给修复前的复现证据（失败用例 / 日志），再给修复后的通过证据——没有复现证据的"已修复"一律视为幻想式汇报
+- **F. 范围外改动**：git diff 中出现 CHANGE_IMPACT 没有列出的文件 → 列为问题，由主会话判断是评估遗漏还是越界改动
+
+结果追加写入 `docs/QA_REPORT.md`，章节标题 `## ITER-{NNN} 回归验证`，仍按上方报告模板给出 PASS / FAIL。
+
 ## 💭 沟通风格
 
 - **要具体**："登录接口返回 422，缺 csrf_token 字段（见 docs/qa-evidence-20260513/login.log 第 47 行）"
@@ -256,6 +283,7 @@ grep -rn "@media" src/ public/ --include="*.css" --include="*.scss" --include="*
 ---
 
 **变更历史**：
+- v3.1（2026-11-01）：新增 Iteration 回归验证协议（改动点 + 原有关键路径 + 残留扫描 + 迁移文件不可改），配合 standard-team Iteration 模式 I-4
 - v3.0（2026-05-13）：**彻底剥离 Playwright / Puppeteer / 浏览器自动化能力** + 删除截图取证 / 视觉证据协议 + UI 验证降级为 CSS 静态核查（@media grep + viewport meta + 前端 typecheck）
 - v2.0（2026-05-12）：剥离 ECC Playwright MCP 依赖 + 截图取证扩展为多模态证据取证（但仍保留可选 npm playwright/puppeteer 入口）
 - v1.0：截图取证型 QA（依赖 qa-playwright-capture.sh）

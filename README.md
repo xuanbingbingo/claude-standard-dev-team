@@ -21,6 +21,7 @@
 - **契约驱动**：先定 PRD/API/Schema，再让所有人照契约写
 - **任务级 QA 闭环**：实现一个接口，立刻独立验证，FAIL 自动打回重做
 - **零容忍硬编码**：API 路径硬编码必须打回——这是被部署翻车真实教训出来的
+- **上线后也能接着迭代**：Iteration 模式——评估影响范围 → 先改契约 → 只重跑受影响的 Phase → 证据式回归 → 汇报；纯文案 / 样式小改走快速通道（见下方[上线后：Iteration 迭代维护模式](#上线后iteration-迭代维护模式)）
 
 最适合用 Claude Code 做**中型应用**（前后端 + 数据库 + 部署）的人——不论你是独立开发者、一人公司还是小团队。
 
@@ -100,6 +101,25 @@ Phase 11  → technical-writer     → README + API_DOC
 ```
 
 > 详见 [WORKFLOW.md](WORKFLOW.md)：每个 Phase 在做什么、Dev-QA Loop 怎么转、打回机制怎么走。
+
+### 上线后：Iteration 迭代维护模式
+
+项目跑完 11 Phase 上线后，加功能、做优化、修 bug 不用整套重跑，也不要单独找某个 agent 改（契约会和代码对不上）。在已有 `docs/PRD.md` + `docs/API_CONTRACT.md` 的项目里说：
+
+```
+用标准团队迭代 todo app：给待办加一个截止日期提醒
+```
+
+```
+I-1  software-architect   → CHANGE_IMPACT.md（改哪些契约 / 影响哪些模块 / 重跑哪些 Phase / 是否破坏性）
+     ⏸ 仅破坏性变更时请你确认
+I-2  先改契约（版本号 +1，追加变更记录）
+I-3  只重跑受影响的 Phase（改 DB → 4/5，改接口 → 5/6，必跑 8 …），跳过的写明理由
+I-4  testing-evidence-collector → 改动点 + 原有关键路径证据式回归
+I-5  technical-writer     → CHANGELOG.md + README / API_DOC 增量更新，汇报
+```
+
+纯文案 / 样式 / 配置值的小改动走**快速通道**：实现 agent 直接改 → QA 验证 → 记 CHANGELOG。详见 [WORKFLOW.md 第八节](WORKFLOW.md#八iteration-模式已上线项目的迭代维护)。
 
 ---
 
@@ -182,6 +202,7 @@ cp skills/standard-team/SKILL.md ~/.claude/skills/standard-team/
 | **职责单一** | 每个 agent 只干一类事 |
 | **质量 > 速度** | 宁可串行也不并行（前后端不能同时改代码） |
 | **零容忍硬编码** | API 路径硬编码必须打回（来自部署翻车的真实教训） |
+| **契约先于代码（迭代也一样）** | Iteration 模式先评估影响、先改契约，再只重跑受影响的 Phase |
 | **契约变更扫前端** | 架构师改 API_CONTRACT 后必须同步扫一遍前端 `types.ts`，防"后端改完前端不知道"翻车 |
 | **0 插件依赖** | QA agent 不依赖 Playwright / Puppeteer / MCP 插件，所有证据用 bash / curl / jq / diff / typecheck / npm test 取得 |
 

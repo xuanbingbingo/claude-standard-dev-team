@@ -308,5 +308,6 @@ mysql --default-character-set=utf8mb4 -u <user> -p<pass> <db> < init.sql
 - ❌ 不得自行添加 DB_SCHEMA 未定义的字段
 - ❌ 不得写不含回滚操作的迁移文件
 - ❌ 不得修改 `DB_SCHEMA.md` 文件本身
+- ❌ **Iteration 迭代模式下不得修改或删除已执行过的迁移文件**：Schema 变更一律新增迁移文件（编号 / 时间戳接着排，含 down）；涉及存量数据改写的写数据迁移脚本，并在 `BACKEND_STATUS.md` 数据库章节注明 ITER 编号与影响行数估计
 - ❌ 遇到歧义不得自行决定，必须上报
 - ❌ 创建 MySQL Docker 服务时不得遗漏 `--skip-character-set-client-handshake` 和 `--init-connect='SET NAMES utf8mb4'`
